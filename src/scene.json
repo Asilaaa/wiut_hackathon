@@ -1,0 +1,30 @@
+{
+ "_doc": "Hand-annotated layout of the fixed camera view, in 1920x1080 reference pixels. Read from outputs/frames/ref_C3896.png. The organizers provide no camera.md, so this file is our own.",
+ "reference_size": [1920, 1080],
+ "carriageways": {
+  "upper": {"_doc": "far carriageway, above the median; traffic moves away from the camera (towards top-left)", "heading_deg": 200},
+  "lower": {"_doc": "near carriageway, below the median; traffic moves towards the camera (towards bottom-right)", "heading_deg": 20}
+ },
+ "crosswalks": {
+  "A_lower": [[330, 600], [1150, 512], [1165, 550], [345, 650]],
+  "B_upper": [[1190, 500], [1840, 462], [1848, 497], [1198, 537]],
+  "C_side": [[180, 758], [230, 712], [355, 712], [580, 820], [790, 960], [885, 1080], [610, 1080], [540, 960], [335, 830]]
+ },
+ "stop_lines": {
+  "lower": {"_doc": "white stop line before crosswalk A; vehicles cross it moving down-right", "line": [[285, 525], [960, 452]], "signal": "main"},
+  "upper": {"_doc": "no painted line visible; the near edge of crosswalk B is used", "line": [[1198, 545], [1850, 505]], "signal": "main"}
+ },
+ "traffic_lights": {
+  "main": {"_doc": "3-lamp vehicle signal on the median facing the camera; controls the upper carriageway, assumed in phase with the lower one",
+           "red": [1153, 360, 1170, 378], "yellow": [1153, 378, 1170, 394], "green": [1153, 394, 1170, 410]},
+  "side": {"_doc": "2-lamp signal on the bottom-left pole, facing the camera; in phase with main in every sample (backup when main is occluded)",
+               "red": [263, 481, 281, 499], "green": [263, 500, 281, 518]}
+ },
+ "non_carriageway": {
+  "_doc": "raised areas inside the road where vehicles cannot be and pedestrians are allowed",
+  "median": [[105, 112], [125, 108], [700, 318], [1195, 495], [1190, 520], [1100, 505], [650, 330], [100, 125]],
+  "island_top": [[505, 760], [600, 665], [650, 680], [755, 735], [745, 750], [515, 772]],
+  "island_left": [[120, 915], [330, 850], [420, 905], [410, 922], [130, 925]],
+  "island_right": [[680, 845], [870, 808], [950, 855], [945, 870], [700, 895]]
+ }
+}
