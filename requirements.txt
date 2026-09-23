@@ -1,2 +1,9 @@
-numpy>=1.24
-opencv-python-headless>=4.8
+# Harness (starter kit)
+numpy==2.5.2
+opencv-python-headless==5.0.0.93
+# Detection + tracking. The PyPI torch wheel for Linux ships with CUDA, so the
+# evaluation GPU is used automatically; on CPU-only machines it falls back to CPU.
+torch==2.14.0
+torchvision==0.29.0
+ultralytics==8.4.160
+lap==0.5.13
