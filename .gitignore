@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+samples/*.mp4
+samples/*.MP4
+cache/
+outputs/
+.DS_Store
+*.pt
+!weights/*.pt
