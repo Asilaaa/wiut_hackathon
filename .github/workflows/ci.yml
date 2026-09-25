@@ -1,0 +1,27 @@
+# Checks that the submission installs on a clean machine and keeps the harness interface.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  submission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install (CPU torch to save time on the runner)
+        run: |
+          pip install torch==2.14.0 torchvision==0.29.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+      - name: Harness can import the solution
+        run: python -c "import solution; assert callable(solution.detect_events); solution.RiskEstimator().reset({})"
+      - name: Example predictions pass the format check
+        run: python evaluate.py --pred examples/predictions.json --validate-only
+      - name: Committed sample predictions pass the format check
+        if: hashFiles('predictions_samples.json') != ''
+        run: python evaluate.py --pred predictions_samples.json --validate-only

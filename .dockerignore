@@ -1,0 +1,6 @@
+samples/
+cache/
+outputs/
+docs/
+.git/
+**/__pycache__/

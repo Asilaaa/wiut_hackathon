@@ -1,0 +1,67 @@
+# Builds the live-demo API image and rolls it out on the team server.
+# The deploy job stays skipped until the repository variable DEPLOY_ENABLED is "true"
+# (see deploy/README.md for the secrets and variables it needs).
+name: Deploy demo API
+
+on:
+  push:
+    branches: [main]
+    paths: ["solution.py", "src/**", "weights/**", "demo/**", "deploy/**", "requirements.txt"]
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/ctrl-alt-elite-newuu/traffic-event-detection-demo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: demo/Dockerfile
+          push: true
+          tags: ${{ env.IMAGE }}:latest,${{ env.IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Copy compose files to the server
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: deploy/docker-compose.yml,deploy/Caddyfile
+          target: ${{ vars.DEPLOY_DIR }}
+          strip_components: 1
+      - name: Pull and restart
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd ${{ vars.DEPLOY_DIR }}
+            printf 'DOMAIN=%s\nSITE_DIR=%s\nDEMO_TAG=%s\n' '${{ vars.DOMAIN }}' '${{ vars.SITE_DIR }}' '${{ github.sha }}' > .env
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
