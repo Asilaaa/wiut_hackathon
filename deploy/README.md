@@ -37,3 +37,12 @@ Make the package public (Package settings → Change visibility) so the server c
 
 The website repository (`traffic-event-detection-web`) needs the same four secrets and the
 `DEPLOY_ENABLED` and `SITE_DIR` variables; `API_BASE` is optional (defaults to the same origin).
+
+## Branch flow
+All work is pushed to `dev`; `main` only changes through a pull request from `dev`.
+
+| Event | CI checks | Demo image | Deploy to server |
+|---|---|---|---|
+| push to `dev` | run | built, not published | skipped |
+| pull request into `main` | run | built, not published | skipped |
+| merge into `main` | run | built and published to GHCR | runs (when `DEPLOY_ENABLED` is `true`) |
